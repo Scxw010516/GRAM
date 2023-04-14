@@ -176,6 +176,44 @@ class FFHQ(Dataset):
 
         return X, P
 
+class Ear(Dataset):
+    def __init__(self, img_size, **kwargs):
+        super().__init__()
+        self.img_size = img_size
+        self.real_pose = False
+        if 'real_pose' in kwargs and kwargs['real_pose'] == True:
+            self.real_pose = True
+
+        for i in range(10):
+            try:
+                self.data = glob.glob(os.path.join('datasets/Ear/Ear_train','*.jpg'))
+                assert len(self.data) > 0, "Can't find data; make sure you specify the path to your dataset"
+                if self.real_pose:
+                    self.pose = [os.path.join('datasets/cats/poses',f.split('/')[-1].replace('.png','_pose.npy')) for f in self.data]
+                break
+            except:
+                print('failed to load dataset, try %02d times'%i)
+                time.sleep(0.5)
+
+        self.transform = transforms.Compose(
+                    [transforms.Resize((img_size, img_size), interpolation=1), transforms.ToTensor(), transforms.Normalize([0.5], [0.5])])
+
+    def __len__(self):
+        return len(self.data)
+
+    def __getitem__(self, index):
+        X = PIL.Image.open(self.data[index])
+        X = self.transform(X)
+        flip = (torch.rand(1) < 0.5)
+        if flip:
+            X = F.hflip(X)
+        if self.real_pose:
+            P = read_pose_npy(self.pose[index], flip=flip)
+        else:
+            P = 0
+
+        return X, P
+
 
 def get_dataset(name, subsample=None, batch_size=1, **kwargs):
     dataset = globals()[name](**kwargs)
