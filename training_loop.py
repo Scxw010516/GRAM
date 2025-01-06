@@ -187,8 +187,8 @@ def training_process(rank, world_size, opt, device):
 
             # save model
             if discriminator.step % opt.model_save_interval == 0 and rank == 0:
-                torch.save(ema, os.path.join(opt.output_dir, 'step%06d_ema.pth'%discriminator.step))
-                torch.save(ema2, os.path.join(opt.output_dir, 'step%06d_ema2.pth'%discriminator.step))
+                torch.save(ema.state_dict(), os.path.join(opt.output_dir, 'step%06d_ema.pth'%discriminator.step))
+                torch.save(ema2.state_dict(), os.path.join(opt.output_dir, 'step%06d_ema2.pth'%discriminator.step))
                 torch.save(generator_ddp.module.state_dict(), os.path.join(opt.output_dir, 'step%06d_generator.pth'%discriminator.step))
                 torch.save(discriminator_ddp.module.state_dict(), os.path.join(opt.output_dir, 'step%06d_discriminator.pth'%discriminator.step))
                 torch.save(optimizer_G.state_dict(), os.path.join(opt.output_dir, 'step%06d_optimizer_G.pth'%discriminator.step))
@@ -228,8 +228,8 @@ def training_process(rank, world_size, opt, device):
 
                 # save_model
                 if discriminator.step % opt.sample_interval == 0:
-                    torch.save(ema, os.path.join(opt.output_dir, 'ema.pth'))
-                    torch.save(ema2, os.path.join(opt.output_dir, 'ema2.pth'))
+                    torch.save(ema.state_dict(), os.path.join(opt.output_dir, 'ema.pth'))
+                    torch.save(ema2.state_dict(), os.path.join(opt.output_dir, 'ema2.pth'))
                     torch.save(generator_ddp.module.state_dict(), os.path.join(opt.output_dir, 'generator.pth'))
                     torch.save(discriminator_ddp.module.state_dict(), os.path.join(opt.output_dir, 'discriminator.pth'))
                     torch.save(optimizer_G.state_dict(), os.path.join(opt.output_dir, 'optimizer_G.pth'))

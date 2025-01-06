@@ -14,10 +14,12 @@ os.environ["CUDA_VISIBLE_DEVICES"] = ','.join(str(i) for i in list(range(torch.c
 def setup(rank, world_size, port):
     os.environ['MASTER_ADDR'] = 'localhost'
     os.environ['MASTER_PORT'] = port
+    os.environ["PL_TORCH_DISTRIBUTED_BACKEND"] = "gloo"
 
     # initialize the process group
     torch.cuda.set_device(rank)
-    dist.init_process_group("nccl", rank=rank, world_size=world_size)
+    # dist.init_process_group("nccl", rank=rank, world_size=world_size)
+    dist.init_process_group("gloo", rank=rank, world_size=world_size)
 
 
 def cleanup():
@@ -33,14 +35,14 @@ def train(rank, world_size, opt):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument("--n_epochs", type=int, default=600, help="number of epochs of training")
-    parser.add_argument("--sample_interval", type=int, default=500, help="interval between image sampling")
-    parser.add_argument('--output_dir', type=str, default='results/FFHQ_default')
+    parser.add_argument("--n_epochs", type=int, default=1000, help="number of epochs of training")
+    parser.add_argument("--sample_interval", type=int, default=50, help="interval between image sampling")
+    parser.add_argument('--output_dir', type=str, default='')
     parser.add_argument('--load_dir', type=str, default='')
-    parser.add_argument('--config', type=str, default='FFHQ_default')
+    parser.add_argument('--config', type=str, default='Ear')
     parser.add_argument('--port', type=str, default='12355')
     parser.add_argument('--set_step', type=int, default=None)
-    parser.add_argument('--model_save_interval', type=int, default=5000)
+    parser.add_argument('--model_save_interval', type=int, default=1000)
     parser.add_argument('--patch_split', type=int, default=None)
 
     opt = parser.parse_args()
@@ -58,6 +60,8 @@ if __name__ == '__main__':
             opt.set_step = None
 
     print(opt)
-    num_gpus = len(os.environ['CUDA_VISIBLE_DEVICES'].split(','))
+    # num_gpus = len(os.environ['CUDA_VISIBLE_DEVICES'].split(','))
+    num_gpus = 1
     mp.spawn(train, args=(num_gpus, opt), nprocs=num_gpus, join=True)
+    # python train.py --config Ear --load_dir pretrained_models/CARLA_default --output_dir Output/EarOutput1
 

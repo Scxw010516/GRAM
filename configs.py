@@ -235,7 +235,7 @@ CARLA_default = {
 }
 Ear = {
     'global': {
-        'img_size': 256,
+        'img_size': 64,
         'batch_size': 2,
         'z_dist': 'gaussian',
     },
@@ -258,7 +258,7 @@ Ear = {
         'class': 'GramGenerator',
         'kwargs': {
             'z_dim': 256,
-            'img_size': 256,
+            'img_size': 64,
             'h_stddev': 0.3,
             'v_stddev': 0.155,
             'h_mean': math.pi*0.5,
@@ -293,13 +293,13 @@ Ear = {
     'discriminator': {
         'class': 'GramDiscriminator',
         'kwargs': {
-            'img_size': 256,
+            'img_size': 64,
         }
     },
     'dataset': {
         'class': 'Ear',
         'kwargs': {
-            'img_size': 256,
+            'img_size': 64,
             'real_pose': False,
         }
     },

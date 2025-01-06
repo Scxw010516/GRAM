@@ -72,6 +72,8 @@ class Gan3DProcess:
             d_loss = F.softplus(g_preds).mean() + F.softplus(-r_preds).mean() + grad_penalty + position_penalty
 
         optimizer_D.zero_grad()
+        # d_loss = d_loss.to(torch.float32)
+        # d_loss = torch.tensor(d_loss, dtype=float, requires_grad=True)
         scaler.scale(d_loss).backward()
         scaler.unscale_(optimizer_D)
         nn.utils.clip_grad_norm_(discriminator_ddp.parameters(), config['optimizer'].get('grad_clip', 0.3))

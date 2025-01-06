@@ -242,3 +242,4 @@ cython_debug/
 # Other
 images/
 datasets/
+/Output/EarOutput1
